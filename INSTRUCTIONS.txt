@@ -1,0 +1,31 @@
+// BUILD LOCALLY (development) //
+cargo build
+cargo test
+
+// BUILD, TEST AND PUSH THE IMAGE TO DOCKER HUB //
+// From a terminal where your user can use docker.
+// The tags come from Cargo.toml: version = "2.1.0" → :2.1.0, :2.1 and :latest.
+// If you are not logged in to Docker Hub, the script runs "docker login":
+// use your username and an access token (Docker Hub > Account settings > Personal access tokens).
+// On a network share without exec permission, run it through sh:
+sh ./docker/build_and_push.sh
+
+// Only build and test, without pushing:
+sh ./docker/build_and_push.sh --no-push
+
+// TAG THE VERSION IN GIT //
+// After publishing the image, tag the same version and push it:
+git tag -a vX.Y.Z -m "Axpert Multi-Inverter Monitor X.Y.Z"
+git push origin main vX.Y.Z
+
+// ON THE SERVER: PULL AND START / UPDATE //
+// Copy docker-compose.yml and .env (from .env.example) to a folder on the server and run there:
+docker compose pull
+docker compose up -d
+
+// TOOLS INSIDE THE CONTAINER //
+docker exec -it axpert_monitor_multi bash
+//   nano, sudo, htop, curl, jq, ping, dig, ip
+//   nc -vz IP PORT                            → test an inverter's TCP/serial converter
+//   mosquitto_sub -h IP -u USER -P PASS -t 'axpert/#' -v   → see what is published on MQTT
+//   apt install PACKAGE                       → Alpine uses apk; "apt" translates the basic commands
