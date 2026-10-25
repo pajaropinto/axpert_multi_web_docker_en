@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar Monitor - Login</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 22px; }
+    @media (max-width: 600px) { html { font-size: 18px; } }
+
+    body {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-wrapper {
+      width: 100%;
+      max-width: 30rem;
+      padding: 1rem;
+    }
+
+    .login-card {
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo svg {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 0.75rem;
+    }
+
+    .logo h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }
+
+    .logo p {
+      font-size: 0.85rem;
+      color: #8899aa;
+      margin-top: 0.25rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #aabbcc;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 0.45rem;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      background: #0d1b2e;
+      border: 1px solid #1e3a5f;
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 1rem;
+      padding: 0.7rem 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #0f3460;
+      box-shadow: 0 0 0 3px rgba(15,52,96,0.4);
+    }
+
+    .btn-login {
+      width: 100%;
+      background: #0f3460;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.8rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-login:hover { background: #1a4a7a; }
+    .btn-login:active { transform: scale(0.98); }
+    .btn-login:disabled {
+      background: #1e3a5f;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .error-msg {
+      background: rgba(225,112,85,0.15);
+      border: 1px solid rgba(225,112,85,0.4);
+      border-radius: 6px;
+      color: #e17055;
+      font-size: 0.88rem;
+      padding: 0.65rem 0.9rem;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="logo">
+        <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="28" cy="28" r="28" fill="#0f3460"/>
+          <circle cx="28" cy="22" r="9" fill="#fdcb6e" opacity="0.9"/>
+          <path d="M10 38 Q28 28 46 38" stroke="#00b894" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <rect x="18" y="38" width="20" height="4" rx="2" fill="#00b894" opacity="0.8"/>
+          <path d="M28 14 L28 10M20 16.5 L17 13.5M36 16.5 L39 13.5M17 22 L13 22M39 22 L43 22" stroke="#fdcb6e" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h1>Solar Monitor</h1>
+        <p>Multi-Inverter Management System</p>
+      </div>
+
+      <form id="login-form" autocomplete="on">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="Enter username" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn-login" id="login-btn">Sign In</button>
+        <div class="error-msg" id="error-msg"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('login-form');
+    const btn = document.getElementById('login-btn');
+    const errEl = document.getElementById('error-msg');
+
+    // If already logged in, redirect
+    fetch('/api/status', { credentials: 'include' })
+      .then(r => { if (r.ok) window.location.href = '/index.html'; })
+      .catch(() => {});
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errEl.classList.remove('visible');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Signing in...';
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ username, password })
+        });
+
+        if (res.ok) {
+          window.location.href = '/index.html';
+        } else {
+          let msg = 'Invalid username or password.';
+          try {
+            const data = await res.json();
+            if (data.message) msg = data.message;
+          } catch (_) {}
+          showError(msg);
+        }
+      } catch (err) {
+        showError('Connection error. Please try again.');
+      }
+    });
+
+    function showError(msg) {
+      errEl.textContent = msg;
+      errEl.classList.add('visible');
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  </script>
+</body>
+</html>

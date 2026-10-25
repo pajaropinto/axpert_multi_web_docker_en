@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar Monitor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ── Header ── -->
+  <header id="header">
+    <div class="header-left">
+      <div class="header-logo">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="16" fill="#0f3460"/>
+          <circle cx="16" cy="13" r="5" fill="#fdcb6e" opacity="0.9"/>
+          <path d="M6 22 Q16 16 26 22" stroke="#00b894" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <rect x="11" y="22" width="10" height="2.5" rx="1.2" fill="#00b894" opacity="0.8"/>
+          <path d="M16 8 L16 6M11.5 9.5 L10 8M20.5 9.5 L22 8M9.5 13 L7.5 13M22.5 13 L24.5 13" stroke="#fdcb6e" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="header-title">Solar Monitor</span>
+    </div>
+    <div class="header-right">
+      <div class="conn-status">
+        <div class="conn-dot" id="conn-dot"></div>
+        <span id="conn-label">Disconnected</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Tab Bar ── -->
+  <nav id="tab-bar">
+    <!-- Tabs injected by JS -->
+  </nav>
+
+  <!-- ── Tab Content ── -->
+  <main id="tab-content">
+    <div class="loading-overlay" id="initial-loading">
+      <div class="loading-spinner-lg"></div>
+      <span>Connecting to server…</span>
+    </div>
+  </main>
+
+</div>
+
+<!-- ── Response Modal ── -->
+<div class="modal-overlay" id="modal" style="display:none;" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Response</span>
+      <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <pre id="modal-body-text"></pre>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

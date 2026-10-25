@@ -1,0 +1,19 @@
+#!/bin/sh
+# apt compatibility helper for Alpine: maps common apt commands to apk.
+cmd="$1"
+[ $# -gt 0 ] && shift
+case "$cmd" in
+    update)          exec apk update ;;
+    upgrade)         exec apk upgrade "$@" ;;
+    install)         exec apk add "$@" ;;
+    remove|purge)    exec apk del "$@" ;;
+    search)          exec apk search "$@" ;;
+    show)            exec apk info -a "$@" ;;
+    list)            exec apk list "$@" ;;
+    *)
+        echo "This container runs Alpine Linux, which uses apk instead of apt."
+        echo "Supported: apt update | upgrade | install PKG | remove PKG | search TEXT | show PKG | list"
+        echo "Package names can differ from Debian: search them with 'apt search NAME'."
+        [ -z "$cmd" ] && exit 0 || exit 1
+        ;;
+esac

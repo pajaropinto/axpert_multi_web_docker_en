@@ -1,0 +1,53 @@
+# Persistent storage
+# ------------------
+# Everything the app writes (configuration and database) lives in ONE host
+# directory, set by AXPERT_STORAGE_DIR in the .env file next to this one:
+#
+#   ${AXPERT_STORAGE_DIR}/config   → app_config.conf, invNN_config.conf
+#   ${AXPERT_STORAGE_DIR}/data     → axpert.db (energy counters, users)
+#
+# Removing, recreating or updating the container never touches that directory.
+# On start, files already in it always win over the templates in the image;
+# templates are only copied when a file is missing (first run).
+
+services:
+  axpert-monitor:
+    # Published on Docker Hub; build it with docker/build_and_push.sh
+    image: pajaropinto/axpert_monitor_multi_es:latest
+    pull_policy: always
+    container_name: axpert_monitor_multi
+    restart: always
+
+    ports:
+      - "${AXPERT_WEB_PORT:-60606}:60606"
+
+    volumes:
+      - ${AXPERT_STORAGE_DIR:-./storage}/config:/app/config
+      - ${AXPERT_STORAGE_DIR:-./storage}/data:/app/data
+      - /etc/localtime:/etc/localtime:ro
+
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+
+    networks:
+      homeassistant:
+        ipv4_address: 172.100.0.70
+
+    # Health check: verify the web server is responding
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:60606/api/health 2>/dev/null | grep -q ok || exit 1" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  homeassistant:
+    external: true
+    name: homeassistant

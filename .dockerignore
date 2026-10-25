@@ -1,0 +1,37 @@
+# Build artifacts
+target/
+Cargo.lock.bak
+
+# Runtime data (never bake into the image)
+data/
+storage/
+*.db
+.env
+
+# Config with real credentials (use volume mount at runtime)
+config/app_config.conf
+config/inv*.conf
+
+# Version control
+.git/
+.gitignore
+
+# Editor artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+log/
+
+# CI / docs
+.github/
+*.md
+!config.defaults/

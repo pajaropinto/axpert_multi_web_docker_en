@@ -1,0 +1,17 @@
+# Build output
+target/
+
+# Local installation data: real configuration (credentials, IPs) and database
+config/
+data/
+storage/
+*.db
+.env
+
+# Editor / tool settings
+.claude/
+.vscode/
+.idea/
+
+# Spanish copy of the license (the repository uses LICENSE)
+LICENSE.txt
